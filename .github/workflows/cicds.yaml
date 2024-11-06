@@ -57,6 +57,20 @@ jobs:
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
           export_default_credentials: true
       
+      - name: Create Helm Package
+        run: |
+          helm package .
+        continue-on-error: true
+  
+      - name: Deployment Confirmation
+        run: |
+          read -p "Do you want to continue with deployment? (yes/no) " choice
+          if [[ $choice != "yes" ]]; then
+            echo "Deployment aborted."
+            exit 1
+          fi
+  
       - name: Deploy to Google Kubernetes Engine
         run: |
-          kubectl apply -f ./gke-workload/deployment.yaml
+          gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
+          helm upgrade --install my-app ./my-app --namespace default --set image.tag=${{ github.sha }}
