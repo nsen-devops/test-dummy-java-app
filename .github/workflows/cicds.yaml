@@ -38,11 +38,7 @@ jobs:
       
       - name: Scan container image
         run: |
-          sudo apt-get remove google-cloud-sdk or sudo apt purge --autoremove google-cloud-sdk
-          tar -zxf google-cloud-sdk-*
-          ./google-cloud-sdk/install.sh
-          source ~/.bashr
-          sudo apt-get install google-cloud-cli-local-extract
+          sudo apt-get install google-cloud-cli
           gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format="get-value(vulnerabilities.high_severity.count)"
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
