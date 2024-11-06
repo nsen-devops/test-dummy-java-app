@@ -1,18 +1,15 @@
-name: CI/CD Pipeline
+name: Java CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Set up JDK 11
@@ -21,61 +18,43 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Sonar Code Quality Check
-        if: always()
-        run: echo "Running SonarQube scan"
-        # Add actual SonarQube analysis command here
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
-      - name: Nexus Vulnerabilities Scan
-        if: always()
-        run: echo "Running Nexus IQ scan"
-        # Add actual Nexus IQ scan command here
+      - name: Build with Maven
+        run: mvn clean install
 
-      - name: Static Application Security Testing (SAST)
-        if: always()
-        run: echo "Running SAST scan"
-        # Add actual SAST tool command here
+      - name: Build Docker Image
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }} .
 
-      - name: Dynamic Application Security Testing (DAST)
-        if: always()
-        run: echo "Running DAST scan"
-        # Add actual DAST tool command here
-
-      - name: Build Docker image
-        if: always()
+      - name: Push Docker Image to Google Artifact Registry
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }} .
           echo ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
-
-      - name: Push Docker image to Google Artifact Registry
-        if: always()
-        run: |
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
 
       - name: Container Image Scan
-        if: always()
-        run: echo "Scanning container image"
-        # Add actual container scanning command here
+        run: gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
 
-      - name: Create Helm package
-        if: always()
-        run: |
-          helm package .
-          echo "Helm package created"
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/main')
+    steps:
+      - name: Setup GCloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          export_default_credentials: true
 
-      - name: Deploy to GKE using Helm
-        if: always()
-        run: |
-          echo "Deploying to GKE using Helm charts"
-          helm upgrade --install my-app ./my-app --namespace default --set image.tag=${{ github.sha }}
+      - name: Configure Kubernetes Engine
+        run: gcloud container clusters get-credentials n-test --zone us-central1-c
+
+      - name: Deploy to Google Kubernetes Engine
+        run: kubectl apply -f gke-workload/deployment.yaml
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
-
-      - name: User Approval
-        if: always()
-        run: |
-          read -p "Do you want to proceed with the deployment? (yes/no) " choice
-          if [[ $choice != "yes" ]]; then
-            echo "Deployment aborted by user."
-            exit 1
-          fi
+          IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}

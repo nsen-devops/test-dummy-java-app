@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: spring-boot-app
-        image: abhishekf5/ultimate-cicd:replaceImageTag
+        image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
         ports:
         - containerPort: 8080
