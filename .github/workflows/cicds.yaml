@@ -38,8 +38,8 @@ jobs:
       
       - name: Scan container image
         run: |
-          sudo apt-get install google-cloud-cli-local-extract
-          gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format="get-value(vulnerabilities.high_severity.count)"
+          yes | sudo apt-get install google-cloud-cli-local-extract
+          yes | gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format="get-value(vulnerabilities.high_severity.count)"
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
