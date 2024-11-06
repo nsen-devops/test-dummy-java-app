@@ -4,7 +4,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master #############intentinally changed to stop on every push
   pull_request:
     branches:
       - main
@@ -59,4 +59,5 @@ jobs:
       
       - name: Deploy to Google Kubernetes Engine
         run: |
-          kubectl apply -f gke-workload/deployment.yaml
+          kubectl apply -f ./gke-workload/deployment.yaml
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
