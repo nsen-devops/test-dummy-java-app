@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
@@ -60,6 +60,7 @@ jobs:
       
       - name: Deploy to Google Kubernetes Engine
         run: |
+          yes | sudo apt-get install gke-gcloud-auth-plugin
           gcloud container clusters get-credentials n-test --zone us-central1-c
           kubectl apply -f deployment.yaml
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
