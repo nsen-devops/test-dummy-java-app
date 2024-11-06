@@ -33,7 +33,7 @@ jobs:
 
       - name: Push Docker Image to Google Artifact Registry
         run: |
-          echo ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
+          echo ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} | docker login -u _json_key --password-stdin https://us-central1-docker.pkg.dev
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
 
       - name: Container Image Scan
