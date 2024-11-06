@@ -37,7 +37,7 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA
       
       - name: Scan container image
-        run: gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format=get-value(vulnerabilities.high_severity.count)
+        run: gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format="get-value(vulnerabilities.high_severity.count)"
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
