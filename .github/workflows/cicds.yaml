@@ -38,6 +38,7 @@ jobs:
       
       - name: Scan container image
         run: |
+          sudo add-apt-repository universe
           sudo apt-get install google-cloud-cli-local-extract
           gcloud artifacts docker images scan gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA --format="get-value(vulnerabilities.high_severity.count)"
         env:
