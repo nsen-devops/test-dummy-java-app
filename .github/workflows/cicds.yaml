@@ -26,8 +26,11 @@ jobs:
         run: mvn clean install
       
       - name: Build Docker image
-        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA .
-      
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA .
+          echo "*****************************printing secret**************************"
+          echo ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        
       - name: Push Docker image to Google Artifact Registry
         run: |
           echo ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} | docker login -u _json_key --password-stdin https://gcr.io
