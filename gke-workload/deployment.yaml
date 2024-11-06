@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-boot-app
+  name: nginx-deployment
   labels:
-    app: spring-boot-app
+    app: nginx
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: spring-boot-app
+      app: nginx
   template:
     metadata:
       labels:
-        app: spring-boot-app
+        app: nginx
     spec:
       containers:
-      - name: spring-boot-app
-        image: gcr.io/PROJECT_ID/my-app:$TAG
+      - name: nginx-custom
+        image: 'gcr.io/PROJECT_ID/IMAGE:DOCKER_IMG_TAG'
         ports:
-        - containerPort: 8080
+        - containerPort: 80
