@@ -4,7 +4,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master #############intentinally changed to stop on every push
+      - main
   pull_request:
     branches:
       - main
@@ -61,4 +61,3 @@ jobs:
         run: |
           gcloud container clusters get-credentials n-test --zone us-central1-c
           kubectl apply -f ./gke-workload/deployment.yaml
-
