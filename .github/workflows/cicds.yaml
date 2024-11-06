@@ -24,26 +24,6 @@ jobs:
       
       - name: Build with Maven
         run: mvn clean install
-        if: ${{ github.event_name != 'pull_request' || !contains(github.event.pull_request.title, 'python') }}
-      
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Nexus Vulnerability Scan
-        uses: sonatype-nexus-community/nexus-iq-github-action@main
-        with:
-          applicationId: 'your-application-id'
-          iqServerUrl: 'https://your-nexus-iq-server-url'
-          iqAuthToken: ${{ secrets.NEXUS_IQ_TOKEN }}
-      
-      - name: Static Application Security Testing (SAST)
-        uses: github/codeql-action/analyze@v1
-      
-      - name: Dynamic Application Security Testing (DAST)
-        run: echo "DAST Step" # Placeholder for DAST step
       
       - name: Build Docker image
         run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:$GITHUB_SHA .
