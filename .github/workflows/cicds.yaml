@@ -60,5 +60,5 @@ jobs:
       - name: Deploy to Google Kubernetes Engine
         run: |
           gcloud container clusters get-credentials n-test --zone us-central1-c
-          kubectl apply -f deployment.yaml
+          kubectl apply -f gke-workload/deployment.yaml
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
