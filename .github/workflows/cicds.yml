@@ -15,11 +15,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-
-      - name: Compile the code
+      - name: Check current directory and list files
         run: |
-          echo -e "========================================`pwd`========================================="
-          javac -d out src/**/*.java
+          pwd
+          ls -al
+      - name: Compile the code
+        run: javac -d out src/**/*.java
         continue-on-error: false
 
       - name: Build the application
