@@ -17,7 +17,9 @@ jobs:
           distribution: 'adopt'
 
       - name: Compile the code
-        run: javac -d out src/**/*.java
+        run: |
+          pwd
+          javac -d out src/**/*.java
         continue-on-error: false
 
       - name: Build the application
