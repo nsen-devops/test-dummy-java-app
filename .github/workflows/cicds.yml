@@ -2,6 +2,11 @@ name: CI/CD Pipeline
 
 on:
   workflow_dispatch:
+    inputs:
+      yn:
+        description: 'Define env name'     
+        required: true
+        default: 'yes'
 
 jobs:
   build-and-deploy:
