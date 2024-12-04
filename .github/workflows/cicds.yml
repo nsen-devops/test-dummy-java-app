@@ -66,6 +66,7 @@ jobs:
       - name: Deploy to Google Kubernetes Engine
         if: ${{ inputs.deploy }} == 'yes'
         run: |
+          gcloud auth application-default login
           gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
           helm upgrade --install my-release ./my-app
         continue-on-error: false
