@@ -15,12 +15,9 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Check current directory and list files
-        run: |
-          pwd
-          ls -al
+
       - name: Compile the code
-        run: javac -d out src/**/*.java
+        run: javac -d out src/main/java/com/abhishek/StartApplication.java
         continue-on-error: false
 
       - name: Build the application
