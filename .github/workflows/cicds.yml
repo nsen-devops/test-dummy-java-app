@@ -16,17 +16,13 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Compile the code
-        run: javac -d out src/main/java/com/abhishek/StartApplication.java
-        continue-on-error: false
+      - name: Compile and Build JAVA code
+        run: ./gradlew build
+        continue-on-error: true
 
-      - name: Build the application
-        run: java -cp out Main
-        continue-on-error: false
-
-      - name: Run unit tests
-        run: java -cp out org.junit.runner.JUnitCore TestMain
-        continue-on-error: false
+      - name: Run Unit Tests
+        run: ./gradlew test
+        continue-on-error: true
 
       - name: Static code quality check
         run: bash sonarqube_scan.sh
