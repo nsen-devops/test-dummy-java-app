@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -44,15 +44,12 @@ jobs:
           docker tag my-app:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
         continue-on-error: false
-  deploy:
-    runs-on: n-test-github-sh-runner
-    steps:
+
       - name: Package application with Helm
         run: |
           helm create my-app
           sed -i 's|repository: nginx|repository: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app|' my-app/values.yaml
           sed -i 's/tag: ""/tag: "${{ github.sha }}"/' my-app/values.yaml
-          helm package .
         continue-on-error: false
 
       - name: User confirmation for deployment
