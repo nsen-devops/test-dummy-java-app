@@ -63,7 +63,7 @@ jobs:
       #     echo "::set-output name=deploy::$(bash -c 'read -p "Proceed with deployment? (yes/no): " yn; echo $yn')"
       #   continue-on-error: false
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: n-test-ghr
     steps:
       - name: Deploy to Google Kubernetes Engine
         if: ${{ inputs.deploy }} == 'yes'
