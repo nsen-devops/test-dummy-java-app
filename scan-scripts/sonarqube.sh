@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Define variables
-SONAR_HOST_URL="http://your-sonarqube-server"
+SONAR_HOST_URL="http://${{ secrets.SERVER_IP }}:9000"
 SONAR_API_URL="$SONAR_HOST_URL/api"
-PROJECT_KEY="your_project_key"
-TOKEN="your_sonarqube_token"
+PROJECT_KEY="dummy-test"
+TOKEN=${{ secrets.SONAR_TOKEN }}
 
 # Check Prerequisites
 echo "Checking prerequisites..."
