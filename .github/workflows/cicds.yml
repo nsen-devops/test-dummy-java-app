@@ -69,6 +69,8 @@ jobs:
           GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
           echo $GCP_SERVICE_ACCOUNT_KEY | gcloud auth activate-service-account --key-file=-
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
           sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
           gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
           helm upgrade --install my-release ./my-app
