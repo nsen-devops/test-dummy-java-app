@@ -41,8 +41,8 @@ jobs:
           GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
           echo ${{ secrets.GOOGLE_ARTIFACT_REGISTRY_CREDENTIALS }} | docker login -u _json_key --password-stdin https://us-central1-docker.pkg.dev
-          docker tag my-app:latest us-central1-docker.pkg.dev/my-project/my-repo/my-app:latest
-          docker push us-central1-docker.pkg.dev/my-project/my-repo/my-app:latest
+          docker tag my-app:latest us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/my-app:latest
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-repo/my-app:latest
         continue-on-error: false
 
       - name: Scan container image with Prisma
@@ -62,6 +62,6 @@ jobs:
       - name: Deploy to Google Kubernetes Engine
         if: steps.prompt.outputs.deploy == 'yes'
         run: |
-          gcloud container clusters get-credentials my-cluster --zone us-central1-c --project my-project
+          gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
           helm upgrade --install my-release ./my-app
         continue-on-error: false
