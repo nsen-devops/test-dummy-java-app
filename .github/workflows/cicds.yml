@@ -48,8 +48,8 @@ jobs:
       - name: Package application with Helm
         run: |
           helm create my-app
-          sed -i 's|repository: nginx|repository: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app|' myapp/values.yaml
-          sed -i 's/tag: ""/tag: "${{ github.sha }}"/' values.yaml
+          sed -i 's|repository: nginx|repository: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app|' my-app/values.yaml
+          sed -i 's/tag: ""/tag: "${{ github.sha }}"/' my-app/values.yaml
           helm package .
         continue-on-error: false
 
