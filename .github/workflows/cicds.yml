@@ -7,7 +7,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
 
       - name: Set up JDK 11
@@ -16,13 +16,17 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Compile and Build JAVA code
-        run: ./gradlew build
-        continue-on-error: true
+      - name: Compile Code
+        run: mvn compile
+        continue-on-error: false
+
+      - name: Build Code
+        run: mvn package
+        continue-on-error: false
 
       - name: Run Unit Tests
-        run: ./gradlew test
-        continue-on-error: true
+        run: mvn test
+        continue-on-error: false
 
       - name: Static code quality check
         run: bash sonarqube_scan.sh
