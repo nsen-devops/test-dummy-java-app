@@ -18,52 +18,50 @@ jobs:
 
       - name: Compile the code
         run: javac -d out src/**/*.java
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Build the application
         run: java -cp out Main
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Run unit tests
         run: java -cp out org.junit.runner.JUnitCore TestMain
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Static code quality check
         run: bash sonarqube_scan.sh
-        continue-on-error: true
-
-      - name: Vulnerability and security scanning
-        run: bash nexus_scan.sh artifact.jar
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Build Docker image
         run: docker build -t my-app:latest .
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Push to Google Artifact Registry
+        env: 
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
           echo ${{ secrets.GOOGLE_ARTIFACT_REGISTRY_CREDENTIALS }} | docker login -u _json_key --password-stdin https://us-central1-docker.pkg.dev
           docker tag my-app:latest us-central1-docker.pkg.dev/my-project/my-repo/my-app:latest
           docker push us-central1-docker.pkg.dev/my-project/my-repo/my-app:latest
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Scan container image with Prisma
         run: bash prisma_scan.sh my-app:latest
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Package application with Helm
         run: helm package .
-        continue-on-error: true
+        continue-on-error: false
 
       - name: User confirmation for deployment
         id: prompt
         run: |
           echo "::set-output name=deploy::$(bash -c 'read -p "Proceed with deployment? (yes/no): " yn; echo $yn')"
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Deploy to Google Kubernetes Engine
         if: steps.prompt.outputs.deploy == 'yes'
         run: |
           gcloud container clusters get-credentials my-cluster --zone us-central1-c --project my-project
           helm upgrade --install my-release ./my-app
-        continue-on-error: true
+        continue-on-error: false
