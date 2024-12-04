@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       yn:
-        description: 'Define env name'     
+        description: 'do you want to deploy the changes to cluster?'     
         required: true
         default: 'yes'
 
