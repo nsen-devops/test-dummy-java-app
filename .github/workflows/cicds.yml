@@ -18,7 +18,7 @@ jobs:
 
       - name: Compile the code
         run: |
-          pwd
+          echo -e "========================================`pwd`========================================="
           javac -d out src/**/*.java
         continue-on-error: false
 
