@@ -46,7 +46,11 @@ jobs:
         continue-on-error: false
 
       - name: Package application with Helm
-        run: helm package .
+        run: |
+          helm create my-app
+          sed -i 's|repository: nginx|repository: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app|' myapp/values.yaml
+          sed -i 's/tag: ""/tag: "${{ github.sha }}"/' values.yaml
+          helm package .
         continue-on-error: false
 
       - name: User confirmation for deployment
