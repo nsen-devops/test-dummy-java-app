@@ -64,7 +64,7 @@ jobs:
       #   continue-on-error: false
 
       - name: Deploy to Google Kubernetes Engine
-        if: env.deploy == 'yes'
+        if: ${{ inputs.deploy }} == 'yes'
         run: |
           gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
           helm upgrade --install my-release ./my-app
