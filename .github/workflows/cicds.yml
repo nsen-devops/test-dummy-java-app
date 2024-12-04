@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   workflow_dispatch:
     inputs:
-      yn:
+      deploy:
         description: 'do you want to deploy the changes to cluster?'     
         required: true
-        default: 'yes'
+        default: 'no'
 
 jobs:
   build-and-deploy:
@@ -57,14 +57,14 @@ jobs:
           sed -i 's/tag: ""/tag: "${{ github.sha }}"/' my-app/values.yaml
         continue-on-error: false
 
-      - name: User confirmation for deployment
-        id: prompt
-        run: |
-          echo "::set-output name=deploy::$(bash -c 'read -p "Proceed with deployment? (yes/no): " yn; echo $yn')"
-        continue-on-error: false
+      # - name: User confirmation for deployment
+      #   id: prompt
+      #   run: |
+      #     echo "::set-output name=deploy::$(bash -c 'read -p "Proceed with deployment? (yes/no): " yn; echo $yn')"
+      #   continue-on-error: false
 
       - name: Deploy to Google Kubernetes Engine
-        if: steps.prompt.outputs.deploy == 'yes'
+        if: env.deploy == 'yes'
         run: |
           gcloud container clusters get-credentials my-cluster --zone us-central1-c --project ${{ secrets.GCP_PROJECT_ID }}
           helm upgrade --install my-release ./my-app
