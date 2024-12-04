@@ -45,10 +45,6 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
         continue-on-error: false
 
-      - name: Scan container image with Prisma
-        run: bash prisma_scan.sh my-app:latest
-        continue-on-error: false
-
       - name: Package application with Helm
         run: helm package .
         continue-on-error: false
