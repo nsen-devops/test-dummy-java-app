@@ -50,22 +50,17 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:${{ github.sha }}
         continue-on-error: false
 
+  deploy:
+    needs: build-and-deploy
+    runs-on: n-test-ghr
+    steps:
       - name: Package application with Helm
         run: |
           helm create my-app
           sed -i 's|repository: nginx|repository: gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app|' my-app/values.yaml
           sed -i 's/tag: ""/tag: "${{ github.sha }}"/' my-app/values.yaml
         continue-on-error: false
-
-      # - name: User confirmation for deployment
-      #   id: prompt
-      #   run: |
-      #     echo "::set-output name=deploy::$(bash -c 'read -p "Proceed with deployment? (yes/no): " yn; echo $yn')"
-      #   continue-on-error: false
-  deploy:
-    needs: build-and-deploy
-    runs-on: n-test-ghr
-    steps:
+        
       - name: Deploy to Google Kubernetes Engine
         if: ${{ inputs.deploy }} == 'yes'
         env: 
